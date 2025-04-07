@@ -1,18 +1,10 @@
 "use client";
-import { cn } from "@/lib/utils";
-import {
-  MessageCircle,
-  FileText,
-  Settings,
-  MessageCircleCode,
-} from "lucide-react";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { FileText, Settings, MessageCircleCode } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
   const { theme } = useTheme(); // Get current theme

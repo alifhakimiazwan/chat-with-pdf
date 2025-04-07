@@ -1,5 +1,4 @@
 import ChatComponent from "@/components/ChatComponent";
-import ChatSidebar from "@/components/ChatSidebar";
 import PDFViewer from "@/components/PDFViewer";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";

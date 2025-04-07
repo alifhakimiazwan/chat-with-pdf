@@ -1,11 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Message } from "ai/react";
 import { Loader2, Volume2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
+import React, { useState } from "react";
 import { Copy, Check } from "lucide-react";
-import remarkGfm from "remark-gfm";
 import { MemoizedMarkdown } from "./MemoizedMarkdown";
 
 type Props = {
@@ -15,12 +12,7 @@ type Props = {
   onTextToSpeech: (text: string) => void;
 };
 
-const MessageList = ({
-  messages,
-  isLoading,
-  isThinking,
-  onTextToSpeech,
-}: Props) => {
+const MessageList = ({ messages, isLoading, isThinking }: Props) => {
   const [currentSpeech, setCurrentSpeech] =
     useState<SpeechSynthesisUtterance | null>(null);
 
