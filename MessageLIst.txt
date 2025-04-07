@@ -1,0 +1,109 @@
+import { cn } from "@/lib/utils";
+import { Message } from "ai/react";
+import { Loader2, Volume2 } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
+
+type Props = {
+  messages: Message[];
+  isLoading: boolean;
+  onTextToSpeech: (text: string) => void;
+};
+
+const MessageList = ({ messages, isLoading, onTextToSpeech }: Props) => {
+  const [storedMessages, setStoredMessages] = useState<Message[]>([]);
+  const [currentSpeech, setCurrentSpeech] =
+    useState<SpeechSynthesisUtterance | null>(null);
+
+  // Load messages from localStorage when the component mounts
+  useEffect(() => {
+    const savedMessages = localStorage.getItem("chat_messages");
+    if (savedMessages) {
+      setStoredMessages(JSON.parse(savedMessages));
+    }
+  }, []);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("chat_messages", JSON.stringify(messages));
+      setStoredMessages(messages);
+    }
+  }, [messages]);
+
+  // Handle text-to-speech toggle
+  const handleTextToSpeech = (text: string) => {
+    if (currentSpeech) {
+      window.speechSynthesis.cancel(); // Stop current speech
+      setCurrentSpeech(null);
+    } else {
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+      setCurrentSpeech(utterance);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!storedMessages) return <></>;
+
+  return (
+    <div className="flex flex-col gap-4 px-4">
+      {storedMessages.map((message) => (
+        <div
+          key={message.id}
+          className={cn("flex flex-col", {
+            "items-end pl-10": message.role === "user",
+            "items-start pr-10": message.role === "system",
+          })}
+        >
+          <div
+            className={cn(
+              "rounded-lg px-4 py-3 text-sm shadow-md ring-1 ring-gray-900/10 flex flex-col gap-2",
+              {
+                "bg-blue-600 text-white": message.role === "user",
+                "bg-gray-100 text-black": message.role === "system",
+              }
+            )}
+          >
+            {/* ✅ Title Formatting (First Line as Title) */}
+            {message.role === "system" ? (
+              <div>
+                <div className="text-lg font-bold">
+                  <ReactMarkdown>
+                    {message.content.split("\n")[0]}
+                  </ReactMarkdown>
+                </div>
+                <div className="prose prose-sm leading-relaxed">
+                  <ReactMarkdown>
+                    {message.content.split("\n").slice(1).join("\n\n")}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            ) : (
+              <p>{message.content}</p> // Plain text for user messages
+            )}
+
+            {/* 🔊 Speaker Button for Assistant & System Messages */}
+            {message.role === "system" && (
+              <button
+                onClick={() => handleTextToSpeech(message.content)}
+                className="ml-auto text-gray-500 hover:text-gray-800"
+              >
+                <Volume2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default MessageList;
