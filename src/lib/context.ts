@@ -40,7 +40,7 @@ export async function getContext(query: string, fileKey: string) {
   };
 
   // Include both text and page number in the extracted context
-  let docs = qualifyingDocs.map((match) => {
+  const docs = qualifyingDocs.map((match) => {
     const metadata = match.metadata as Metadata;
     return `**(Page ${metadata.pageNumber}):** ${metadata.text}`;
   });

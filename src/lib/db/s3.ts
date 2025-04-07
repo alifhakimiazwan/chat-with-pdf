@@ -1,4 +1,4 @@
-import { PutObjectCommandOutput, S3 } from "@aws-sdk/client-s3";
+import { S3 } from "@aws-sdk/client-s3";
 
 export async function uploadToS3(
   file: File
@@ -21,15 +21,13 @@ export async function uploadToS3(
         Key: file_key,
         Body: file,
       };
-      s3.putObject(
-        params,
-        (err: any, data: PutObjectCommandOutput | undefined) => {
-          return resolve({
-            file_key,
-            file_name: file.name,
-          });
-        }
-      );
+      s3.putObject(params, (err: Error | null) => {
+        if (err) return reject(err); // now `err` is used correctly
+        return resolve({
+          file_key,
+          file_name: file.name,
+        });
+      });
     } catch (error) {
       reject(error);
     }
@@ -59,7 +57,7 @@ export async function uploadPodcastToS3(
         ContentType: "audio/mpeg",
       };
 
-      s3.putObject(params, (err: any) => {
+      s3.putObject(params, (err: Error | null) => {
         if (err) reject(err);
         resolve(file_key);
       });
