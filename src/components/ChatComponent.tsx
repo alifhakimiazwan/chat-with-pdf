@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Message, useChat } from "@ai-sdk/react";
 import { Button } from "./ui/button";
-import { Send, Mic, Layers } from "lucide-react";
+import { Send, Mic, Layers, MicVocalIcon, ListTodo } from "lucide-react";
 import MessageList from "./MessageList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -121,18 +121,19 @@ const ChatComponent = ({ chatId }: Props) => {
     try {
       setIsGeneratingPodcast(true);
 
-      // // Call your podcast generation API
-      // const response = await axios.post("/api/podcast", { chatId });
-      // const data = response.data;
+      // Call the podcast generation API
+      const response = await axios.post("/api/podcast", { chatId });
+      const data = response.data;
 
-      // if (data.script) {
-      router.push(`/dashboard/podcast/${chatId}`);
-      // } else {
-      //   console.error(
-      //     "❌ Podcast generation failed:",
-      //     data.error || "Unknown error"
-      //   );
-      // }
+      if (data.success) {
+        // Navigate to the podcast dashboard
+        router.push(`/dashboard/podcast/${chatId}`);
+      } else {
+        console.error(
+          "❌ Podcast generation failed:",
+          data.error || "Unknown error"
+        );
+      }
     } catch (error: any) {
       console.error("❌ Podcast Generation Error:", error);
     } finally {
@@ -218,7 +219,7 @@ const ChatComponent = ({ chatId }: Props) => {
               </>
             ) : (
               <>
-                <Layers className="w-4 h-4" />
+                <ListTodo className="w-4 h-4" />
                 MCQs
               </>
             )}
@@ -235,7 +236,7 @@ const ChatComponent = ({ chatId }: Props) => {
               </>
             ) : (
               <>
-                <Layers className="w-4 h-4" />
+                <MicVocalIcon className="w-4 h-4" />
                 Podcast
               </>
             )}

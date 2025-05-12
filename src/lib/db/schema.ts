@@ -72,3 +72,25 @@ export const mcqSchema = z.object({
 });
 
 export const mcqsSchema = z.array(mcqSchema);
+
+export const podcasts = pgTable("podcasts", {
+  id: serial("id").primaryKey(),
+  chatId: integer("chat_id")
+    .references(() => chats.id, { onDelete: "cascade" }) // Linking to chat ID
+    .notNull(),
+  podcastUrl: text("podcast_url").notNull(), // URL of the uploaded podcast
+  pdfName: text("pdf_name").notNull(), // Associated PDF name
+  script: text("script"), // Podcast script (optional)
+  createdAt: timestamp("created_at").notNull().defaultNow(), // Timestamp of creation
+});
+
+export type DrizzlePodcast = typeof podcasts.$inferSelect;
+
+export const podcastSchema = z.object({
+  chatId: z.number(),
+  podcastUrl: z.string(),
+  pdfName: z.string(),
+  script: z.string().optional(),
+});
+
+export const podcastsSchema = z.array(podcastSchema);

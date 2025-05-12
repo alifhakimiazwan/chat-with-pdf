@@ -150,22 +150,21 @@ const MCQSidebar = ({ chats = [], onDeleteChat }: Props) => {
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden mx-auto p-5">
       {/* Header Section */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-700">
             Multiple Choice Questions
           </h1>
-          <p className="text-sm text-gray-400">
-            Review MCQs generated from PDFs
-          </p>
+          <p className="text-sm text-gray-400">Quiz your PDFs with MCQs!</p>
         </div>
-        <div className="flex items-center gap-x-4">
-          <div className="relative w-64">
+        {/* Search Bar */}
+        <div className="flex mt-4 sm:mt-0 sm:ml-auto">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search MCQs..."
-              className="pl-8 pr-4 py-2 text-gray-600 bg-white border  rounded-full shadow-sm focus:outline-none focus:ring-0 focus:ring-purple-500"
+              className="pl-8 pr-4 py-2 text-gray-600 bg-white border placeholder:text-sm rounded-full shadow-sm focus:outline-none focus:ring-0 focus:ring-purple-500 w-full sm:w-64"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

@@ -38,11 +38,14 @@ const FlashcardSidebar = ({ chats = [], onDeleteChat }: Props) => {
   useEffect(() => {
     const dates: Record<number, string> = {};
     chats.forEach((chat) => {
-      dates[chat.id] = new Date(chat.createdAt).toLocaleDateString("en-US", {
-        month: "numeric",
-        day: "numeric",
-        year: "numeric",
-      });
+      dates[chat.chatId] = new Date(chat.createdAt).toLocaleDateString(
+        "en-US",
+        {
+          month: "numeric",
+          day: "numeric",
+          year: "numeric",
+        }
+      );
     });
     setFormattedDates(dates);
   }, [chats]);
@@ -142,20 +145,21 @@ const FlashcardSidebar = ({ chats = [], onDeleteChat }: Props) => {
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden mx-auto p-5">
       {/* Header Section */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-700">Flashcards</h1>
           <p className="text-sm text-gray-400">
-            Review flashcards generated from PDFs
+            Study your PDFs with flashcards!
           </p>
         </div>
-        <div className="flex items-center gap-x-4">
-          <div className="relative w-64">
+        {/* Search Bar */}
+        <div className="flex mt-4 sm:mt-0 sm:ml-auto">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search flashcards..."
-              className="pl-8 pr-4 py-2 text-gray-600 bg-white border border-black rounded-lg"
+              className="pl-8 pr-4 py-2 text-gray-600 bg-white border placeholder:text-sm rounded-full shadow-sm focus:outline-none focus:ring-0 focus:ring-purple-500 w-full sm:w-64"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

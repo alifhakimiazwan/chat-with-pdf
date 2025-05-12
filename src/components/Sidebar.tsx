@@ -6,6 +6,7 @@ import {
   Layers,
   Menu,
   X,
+  MicVocal,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
@@ -23,31 +24,30 @@ const Sidebar = ({ isMobile }: Props) => {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleLinkClick = () => {
+    setIsOpen(false); // Close the sidebar on link click
+  };
+
   const SidebarContent = (
-    <div className="flex flex-col justify-between h-[calc(100vh-2rem)] p-4 m-4 rounded-lg bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-violet-600 via-violet-200 to-slate-100 dark:bg-gray-900 w-64 fixed z-50 lg:static lg:translate-x-0">
+    <div className="flex flex-col justify-between h-[calc(100vh-2rem)] p-1 mt-4 mr-3 lg:p-4 lg:m-4 rounded-lg lg:bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-violet-600 via-violet-200 to-slate-100 dark:bg-gray-900 w-64 fixed z-50 lg:static lg:translate-x-0">
       <div>
         {/* Logo */}
-        <div className="flex items-center gap-3 mt-3">
+        <div className="flex items-center gap-3 mt-3 pl-3">
           <Image
-            src={
-              theme === "dark"
-                ? "/logo/ChatLogoWhite.svg"
-                : "/logo/ChatLogoBlack.svg"
-            }
+            src={"/favicon.svg"}
             alt="Chat Logo"
-            width={30}
-            height={30}
+            width={10}
+            height={10}
+            className="h-10 w-10 rounded-full"
           />
           <h1 className="text-gray-900 dark:text-white text-lg font-extrabold font-telegraf">
             Chat With PDF
           </h1>
         </div>
 
-        <div className="border-b border-gray-300 dark:border-gray-700 my-6" />
-
         {/* Navigation */}
         <div className="mt-6 space-y-2">
-          <Link href="/dashboard/chat">
+          <Link href="/dashboard/chat" onClick={handleLinkClick}>
             <div className="flex items-center gap-2 p-3 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md cursor-pointer">
               <MessageCircle className="w-5 h-5" />
               <p className="text-md font-telegraf font-medium text-gray-900 dark:text-white">
@@ -55,7 +55,7 @@ const Sidebar = ({ isMobile }: Props) => {
               </p>
             </div>
           </Link>
-          <Link href="/dashboard/flashcards">
+          <Link href="/dashboard/flashcards" onClick={handleLinkClick}>
             <div className="flex items-center gap-2 p-3 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md cursor-pointer">
               <Layers className="w-5 h-5" />
               <p className="text-md font-telegraf font-medium text-gray-900 dark:text-white">
@@ -63,7 +63,7 @@ const Sidebar = ({ isMobile }: Props) => {
               </p>
             </div>
           </Link>
-          <Link href="/dashboard/mcq">
+          <Link href="/dashboard/mcq" onClick={handleLinkClick}>
             <div className="flex items-center gap-2 p-3 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md cursor-pointer">
               <ListTodoIcon className="w-5 h-5" />
               <p className="text-md font-telegraf font-medium text-gray-900 dark:text-white">
@@ -71,11 +71,11 @@ const Sidebar = ({ isMobile }: Props) => {
               </p>
             </div>
           </Link>
-          <Link href="/dashboard/settings">
+          <Link href="/dashboard/podcast" onClick={handleLinkClick}>
             <div className="flex items-center gap-2 p-3 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-md cursor-pointer">
-              <Settings className="w-5 h-5" />
+              <MicVocal className="w-5 h-5" />
               <p className="text-md font-telegraf font-medium text-gray-900 dark:text-white">
-                Settings
+                Podcasts
               </p>
             </div>
           </Link>
@@ -83,7 +83,6 @@ const Sidebar = ({ isMobile }: Props) => {
       </div>
 
       <div className="flex items-center gap-3 p-3">
-        <ThemeToggle />
         <UserButton />
       </div>
     </div>
@@ -92,10 +91,17 @@ const Sidebar = ({ isMobile }: Props) => {
   return (
     <>
       {isMobile && (
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <button className="p-4 fixed top-4 left-4 z-50lg:hidden">
-              <Menu className="h-6 w-6" />
+            <button
+              className="p-4 fixed top-4 left-4 z-50 lg:hidden"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </SheetTrigger>
 
@@ -106,7 +112,7 @@ const Sidebar = ({ isMobile }: Props) => {
       )}
 
       {/* Desktop Sidebar */}
-      {!isMobile && SidebarContent}
+      {!isMobile && <div className="hidden lg:block">{SidebarContent}</div>}
     </>
   );
 };

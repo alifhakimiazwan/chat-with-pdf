@@ -68,29 +68,30 @@ const ChatSidebar = ({ chats = [], onDeleteChat }: Props) => {
   };
 
   return (
-    <div className="w-full px-4 sm:px-6 py-4 sm:py-6 ">
+    <div className="w-full max-w-[100vw] overflow-x-hidden mx-auto p-5">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-700">Chats</h1>
-          <p className="text-sm text-gray-400">Chat with documents like PDFs</p>
+          <p className="text-sm text-gray-400">
+            Chat with your PDFs and get answers to your questions.
+          </p>
         </div>
         {/* Search Bar */}
-        <div className="flex items-center gap-x-4">
+        <div className="flex mt-4 sm:mt-0 sm:ml-auto">
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search chats..."
-              className="pl-8 pr-4 py-2 text-gray-600 bg-white border placeholder:text-sm  rounded-full shadow-sm focus:outline-none focus:ring-0 focus:ring-purple-500 sm:placeholder:text-sm"
+              className="pl-8 pr-4 py-2 text-gray-600 bg-white border placeholder:text-sm rounded-full shadow-sm focus:outline-none focus:ring-0 focus:ring-purple-500 w-full sm:w-64"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
           <Button
             size="sm"
-            className="flex items-center gap-x-2"
+            className="flex items-center gap-x-2 ml-4"
             onClick={() => setIsModalOpen(true)}
           >
             <PlusCircle className="w-4 h-4" />
