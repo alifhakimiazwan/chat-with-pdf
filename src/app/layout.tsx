@@ -48,7 +48,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <Providers>
-        <html lang="en" suppressHydrationWarning>
+        <html lang="en" suppressHydrationWarning className="light">
           <body
             className={`${geistSans.variable} ${geistMono.variable} ${telegraf.variable} ${dmsansbold.variable} ${dmsansregular.variable} antialiased`}
           >
