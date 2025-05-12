@@ -58,7 +58,7 @@ const MessageList = ({ messages, isLoading, isThinking }: Props) => {
           >
             <div
               className={cn(" px-4 py-3 text-sm  flex flex-col gap-2", {
-                "rounded-lg shadow-md ring-1 ring-slate-300/10 bg-gray-600 text-white":
+                "rounded-lg shadow-md ring-1 ring-purple-300 bg-purple-600 text-white":
                   message.role === "user",
                 " text-black": message.role === "system",
               })}

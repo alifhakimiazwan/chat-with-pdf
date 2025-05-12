@@ -23,6 +23,7 @@ const ChatPage = async ({ params: { chatId } }: Props) => {
   }
 
   const currentChat = _chats.find((chat) => chat.id === parseInt(chatId));
+  console.log(currentChat?.pdfUrl);
   if (!currentChat) {
     return redirect("/dashboard/chat");
   }

@@ -13,12 +13,21 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex max-h-screen overflow-hidden">
-      <div className="flex-[1] max-w-xs">
+    <div className="flex min-h-screen">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
         <Sidebar />
       </div>
 
-      <div className="flex-[5] overflow-auto">{children}</div>
+      {/* Mobile Sidebar */}
+      <div className="block lg:hidden fixed top-0 left-0 z-50">
+        <Sidebar isMobile />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto pt-12 px-4 sm:pt-0 sm:px-0">
+        {children}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,19 @@
 @tailwind utilities;
 
 @layer utilities {
+  .perspective {
+    perspective: 1000px;
+  }
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
   .text-balance {
     text-wrap: balance;
   }
@@ -11,6 +24,69 @@
   }
   .markdown > * {
     all: revert;
+  }
+  /* For flipping */
+  .perspective {
+    perspective: 1000px;
+  }
+
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  .bubble-user {
+    position: relative;
+    background-color: #007aff; /* iMessage blue */
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+    padding: 10px 14px;
+    max-width: 75%;
+    margin-left: auto;
+  }
+
+  .bubble-user::after {
+    content: "";
+    position: absolute;
+    right: -8px;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-top: 12px solid #007aff;
+    border-left: 12px solid transparent;
+    border-radius: 0 0 2px 0;
+  }
+
+  .bubble-system {
+    position: relative;
+    background-color: #e5e5ea; /* iMessage gray */
+    color: black;
+    border-radius: 18px 18px 18px 4px;
+    padding: 10px 14px;
+    max-width: 75%;
+    margin-right: auto;
+  }
+  .bg-dots {
+    background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .bubble-system::after {
+    content: "";
+    position: absolute;
+    left: -8px;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-top: 12px solid #e5e5ea;
+    border-right: 12px solid transparent;
+    border-radius: 0 0 0 2px;
   }
 }
 
@@ -78,4 +154,15 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.bg-quizizz {
+  background: linear-gradient(135deg, #4c1d95, #6d28d9); /* Purple gradient */
+  background-size: 40px 40px;
+  background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }

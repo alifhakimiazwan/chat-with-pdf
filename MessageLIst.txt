@@ -1,109 +1,108 @@
-import { cn } from "@/lib/utils";
-import { Message } from "ai/react";
-import { Loader2, Volume2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { chats, flashcards } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import fs from "fs";
+import pdfParse from "pdf-parse";
+import { downloadFromS3 } from "@/lib/db/s3-server";
+import OpenAI from "openai";
 
-type Props = {
-  messages: Message[];
-  isLoading: boolean;
-  onTextToSpeech: (text: string) => void;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const systemPrompt = You are a helpful assistant that generates flashcards from text.
+Your task is to create flashcards based on the provided text. Each flashcard should have a question and an answer.
+The flashcards should be in JSON format with the following structure:
+{
+  "flashcards": [
+    {
+
+      "front": "Question 1",
+      "back": "Answer 1"
+    },
+    {
+      "front": "Question 2",
+      "back": "Answer 2"
+    }
+  ]
 };
 
-const MessageList = ({ messages, isLoading, onTextToSpeech }: Props) => {
-  const [storedMessages, setStoredMessages] = useState<Message[]>([]);
-  const [currentSpeech, setCurrentSpeech] =
-    useState<SpeechSynthesisUtterance | null>(null);
+export async function POST(req: Request) {
+  try {
+    const { chatId } = await req.json();
+    console.log("[INFO] Received chatId:", chatId);
 
-  // Load messages from localStorage when the component mounts
-  useEffect(() => {
-    const savedMessages = localStorage.getItem("chat_messages");
-    if (savedMessages) {
-      setStoredMessages(JSON.parse(savedMessages));
+    // 1. Get chat record
+    const chat = await db
+      .select()
+      .from(chats)
+      .where(eq(chats.id, chatId))
+      .then((res) => res[0]);
+
+    if (!chat) {
+      console.error("[ERROR] Chat not found for ID:", chatId);
+      return NextResponse.json({ error: "Chat not found" }, { status: 404 });
     }
-  }, []);
 
-  // Save messages to localStorage when they change
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem("chat_messages", JSON.stringify(messages));
-      setStoredMessages(messages);
+    console.log("[INFO] Found chat:", chat);
+
+    // 2. Download file from S3
+    const fileKey = chat.fileKey;
+
+    const filePath = await downloadFromS3(fileKey);
+    console.log("📂 Downloaded filePath:", filePath);
+
+    if (!filePath) {
+      console.error("❌ Failed to download PDF from S3");
+      return NextResponse.json(
+        { error: "Failed to download PDF" },
+        { status: 500 }
+      );
     }
-  }, [messages]);
 
-  // Handle text-to-speech toggle
-  const handleTextToSpeech = (text: string) => {
-    if (currentSpeech) {
-      window.speechSynthesis.cancel(); // Stop current speech
-      setCurrentSpeech(null);
-    } else {
-      const utterance = new SpeechSynthesisUtterance(text);
-      speechSynthesis.speak(utterance);
-      setCurrentSpeech(utterance);
+    const pdfBuffer = fs.readFileSync(filePath);
+    const pdfData = await pdfParse(pdfBuffer);
+    const pdfText = pdfData.text;
+    console.log("📜 Extracted PDF text length:", pdfText.length);
+
+    const promptText = pdfText.slice(0, 4000);
+    console.log("🧠 Sending to OpenAI:", promptText.slice(0, 200)); // just preview
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: Text:\n${promptText} },
+      ],
+    });
+
+    const content = response.choices[0].message.content;
+    console.log("🤖 OpenAI response:", content);
+
+    const flashcardJSON = JSON.parse(content || "{}");
+    if (!flashcardJSON.flashcards) {
+      console.error("❌ No flashcards found in OpenAI response");
+      return NextResponse.json(
+        { error: "Failed to generate flashcards" },
+        { status: 500 }
+      );
     }
-  };
 
-  if (isLoading) {
-    return (
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <Loader2 className="w-6 h-6 animate-spin" />
-      </div>
+    await db.insert(flashcards).values(
+      flashcardJSON.flashcards.map((card: any) => ({
+        front: card.front,
+        back: card.back,
+        chatId,
+      }))
+    );
+
+    console.log("✅ Flashcards successfully inserted to DB");
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("🔥 Flashcard generation failed:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
     );
   }
-
-  if (!storedMessages) return <></>;
-
-  return (
-    <div className="flex flex-col gap-4 px-4">
-      {storedMessages.map((message) => (
-        <div
-          key={message.id}
-          className={cn("flex flex-col", {
-            "items-end pl-10": message.role === "user",
-            "items-start pr-10": message.role === "system",
-          })}
-        >
-          <div
-            className={cn(
-              "rounded-lg px-4 py-3 text-sm shadow-md ring-1 ring-gray-900/10 flex flex-col gap-2",
-              {
-                "bg-blue-600 text-white": message.role === "user",
-                "bg-gray-100 text-black": message.role === "system",
-              }
-            )}
-          >
-            {/* ✅ Title Formatting (First Line as Title) */}
-            {message.role === "system" ? (
-              <div>
-                <div className="text-lg font-bold">
-                  <ReactMarkdown>
-                    {message.content.split("\n")[0]}
-                  </ReactMarkdown>
-                </div>
-                <div className="prose prose-sm leading-relaxed">
-                  <ReactMarkdown>
-                    {message.content.split("\n").slice(1).join("\n\n")}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            ) : (
-              <p>{message.content}</p> // Plain text for user messages
-            )}
-
-            {/* 🔊 Speaker Button for Assistant & System Messages */}
-            {message.role === "system" && (
-              <button
-                onClick={() => handleTextToSpeech(message.content)}
-                className="ml-auto text-gray-500 hover:text-gray-800"
-              >
-                <Volume2 className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default MessageList;
+}

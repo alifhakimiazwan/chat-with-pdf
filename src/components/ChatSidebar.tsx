@@ -68,21 +68,21 @@ const ChatSidebar = ({ chats = [], onDeleteChat }: Props) => {
   };
 
   return (
-    <div className="w-full mx-3 p-5">
+    <div className="w-full px-4 sm:px-6 py-4 sm:py-6 ">
       {/* Header Section */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-700">Chats</h1>
           <p className="text-sm text-gray-400">Chat with documents like PDFs</p>
         </div>
         {/* Search Bar */}
         <div className="flex items-center gap-x-4">
-          <div className="relative w-64">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search chats..."
-              className="pl-8 pr-4 py-2 text-gray-600 bg-white border border-black rounded-lg focus:outline-none focus:ring-0 focus:border-black"
+              className="pl-8 pr-4 py-2 text-gray-600 bg-white border placeholder:text-sm  rounded-full shadow-sm focus:outline-none focus:ring-0 focus:ring-purple-500 sm:placeholder:text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -105,7 +105,7 @@ const ChatSidebar = ({ chats = [], onDeleteChat }: Props) => {
           onClick={() => setIsModalOpen(false)} // Close modal on clicking outside
         >
           <div
-            className="bg-white p-6 rounded-lg shadow-lg w-1/3 max-w-md relative hover:cursor-pointer"
+            className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 relative hover:cursor-pointer"
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
           >
             {/* X Close Button */}
@@ -137,9 +137,11 @@ const ChatSidebar = ({ chats = [], onDeleteChat }: Props) => {
                 href={`/dashboard/chat/${chat.id}`}
                 className="flex items-center gap-4 w-full"
               >
-                <MessageCircle className="w-6 h-6 text-zinc-600" />
+                <div className="hidden sm:block">
+                  <MessageCircle className="w-6 h-6 text-zinc-600" />
+                </div>{" "}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-500 font-telegraf">
+                  <h3 className="text-lg font-semibold text-gray-500 font-telegraf truncate max-w-[220px] sm:max-w-sm">
                     {chat.pdfName}
                   </h3>
                   <p className="text-xs text-gray-400">

@@ -3,30 +3,21 @@ import { streamText } from "ai";
 import { Message } from "@ai-sdk/react";
 import { getContext } from "@/lib/context";
 import { db } from "@/lib/db";
-import { chats, messages as _messages } from "@/lib/db/schema";
+import { saveChat } from "@/lib/db/dbAction";
+import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { deepseek } from "@ai-sdk/deepseek";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-export async function saveChat(
-  chatId: number,
-  content: string,
-  role: "user" | "system"
-) {
-  await db.insert(_messages).values({
-    chatId,
-    content,
-    role,
-  });
-}
-
 export async function POST(req: Request) {
   try {
     const { messages, chatId, model } = await req.json();
     const _chats = await db.select().from(chats).where(eq(chats.id, chatId));
+    const openAIModel = openai("gpt-4-turbo");
+    const deepSeekModel = deepseek("deepseek-chat");
 
     if (_chats.length !== 1) {
       return NextResponse.json({ error: "Chat not found" }, { status: 404 });
@@ -141,7 +132,7 @@ export async function POST(req: Request) {
     // 🌟 GPT-4 Turbo Streaming
     if (model === "gpt-4-turbo") {
       const result = await streamText({
-        model: openai(model), // Use the selected model dynamically
+        model: openAIModel, // Use the selected model dynamically
         messages: [
           prompt,
           ...messages.filter((message: Message) => message.role === "user"),
@@ -157,7 +148,7 @@ export async function POST(req: Request) {
       return result.toDataStreamResponse();
     } else if (model === "deepseek-chat") {
       const result = await streamText({
-        model: deepseek("deepseek-chat"),
+        model: deepSeekModel,
         messages: [
           promptDeepseek,
           ...messages.filter((message: Message) => message.role === "user"),
@@ -171,8 +162,38 @@ export async function POST(req: Request) {
       });
       return result.toDataStreamResponse();
     }
-  } catch (e) {
-    console.error("Error in AI response:", e); // Debugging log
-    return new Response(e.message, { status: 500 });
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error("Error in AI response:", e); // Now `e` is typed as `Error`
+      return new Response(e.message, { status: 500 });
+    } else {
+      console.error("Unknown error:", e); // Handle other types of errors if necessary
+      return new Response("Unknown error occurred", { status: 500 });
+    }
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const chatId = searchParams.get("chatId");
+
+  if (!chatId) {
+    return NextResponse.json({ error: "Missing chatId" }, { status: 400 });
+  }
+
+  try {
+    const result = await db
+      .select()
+      .from(chats)
+      .where(eq(chats.id, parseInt(chatId)))
+      .then((res) => res[0]);
+
+    if (!result) {
+      return NextResponse.json({ error: "Chat not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(result);
+  } catch (err) {
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

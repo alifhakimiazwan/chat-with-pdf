@@ -21,9 +21,23 @@ const telegraf = localFont({
   variable: "--font-telegraf",
 });
 
+const dmsansregular = localFont({
+  src: "./fonts/DMSansRegular.ttf",
+  variable: "--font-dmsansregular",
+});
+const dmsansbold = localFont({
+  src: "./fonts/DMSansBold.ttf",
+  variable: "--font-dmsansbold",
+});
+
 export const metadata: Metadata = {
   title: "Chat With PDF",
   description: "Converse with your PDF!",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -36,7 +50,7 @@ export default function RootLayout({
       <Providers>
         <html lang="en" suppressHydrationWarning>
           <body
-            className={`${geistSans.variable} ${geistMono.variable} ${telegraf.variable} antialiased`}
+            className={`${geistSans.variable} ${geistMono.variable} ${telegraf.variable} ${dmsansbold.variable} ${dmsansregular.variable} antialiased`}
           >
             <ThemeProvider
               attribute="class"
