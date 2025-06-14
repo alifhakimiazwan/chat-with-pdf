@@ -28,7 +28,7 @@ function setupGoogleCredentials() {
 
   fs.writeFileSync(credentialsPath, buffer);
 
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = credentialsPath;
+  process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64 = credentialsPath;
 }
 
 setupGoogleCredentials();
