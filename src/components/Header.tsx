@@ -35,7 +35,7 @@ const Header = async () => {
               className="h-10 w-10 rounded-full"
             />
           </Link>
-          <div className="grid gap-2 py-6">
+          {/* <div className="grid gap-2 py-6">
             <Link
               href="#"
               className="flex w-full items-center py-2 text-lg font-semibold font-telegraf"
@@ -57,7 +57,7 @@ const Header = async () => {
             >
               About
             </Link>
-          </div>
+          </div> */}
         </SheetContent>
       </Sheet>
       <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ const Header = async () => {
           </h2>
         </Link>
       </div>
-      <div className="w-full flex justify-center">
+      {/* <div className="w-full flex justify-center">
         <NavigationMenu className="hidden  lg:flex">
           <NavigationMenuList>
             <NavigationMenuLink asChild>
@@ -110,7 +110,7 @@ const Header = async () => {
             </NavigationMenuLink>
           </NavigationMenuList>
         </NavigationMenu>
-      </div>
+      </div> */}
       <div className="ml-auto flex gap-2 items-center">
         {!isAuth && (
           <>

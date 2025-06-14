@@ -26,18 +26,17 @@ export default function MCQViewer({ chatId }: { chatId: number }) {
   }, [chatId]);
 
   return (
-    <div className="space-y-8 px-4 max-w-2xl mx-auto">
+    <div className="w-full px-4 space-y-8">
       {mcqs.length === 0 ? (
         <p className="text-center text-gray-500">Loading...</p>
       ) : (
-        mcqs.map((mcq) => (
-          <MCQ
-            key={mcq.id}
-            question={mcq.question}
-            options={JSON.parse(mcq.options)}
-            correctAnswer={mcq.correctAnswer}
-          />
-        ))
+        <MCQ
+          questions={mcqs.map((mcq) => ({
+            question: mcq.question,
+            options: JSON.parse(mcq.options),
+            correctAnswer: mcq.correctAnswer,
+          }))}
+        />
       )}
     </div>
   );

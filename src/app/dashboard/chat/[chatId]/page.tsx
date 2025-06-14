@@ -23,23 +23,21 @@ const ChatPage = async ({ params: { chatId } }: Props) => {
   }
 
   const currentChat = _chats.find((chat) => chat.id === parseInt(chatId));
-  console.log(currentChat?.pdfUrl);
   if (!currentChat) {
     return redirect("/dashboard/chat");
   }
 
   return (
-    <div className="flex h-screen w-full">
-      <div className="flex-[3] p-4">
-        {" "}
-        {/* Increase width for PDFViewer */}
+    <div className="flex flex-col md:flex-row h-screen w-full">
+      {/* PDF Viewer on top (mobile) or left (desktop) */}
+      <div className="h-[40vh] md:h-auto md:flex-[3] border-b md:border-b-0 md:border-r border-gray-300">
         <PDFViewer pdfUrl={currentChat.pdfUrl} />
       </div>
 
-      <div className="flex-[2] border-l border-gray-300">
-        {" "}
-        {/* Increase width for ChatComponent */}
-        <ChatComponent chatId={parseInt(chatId)} />
+      <div className="flex-1 md:flex-[2] h-[60vh] md:h-auto">
+        <div className="h-full overflow-hidden">
+          <ChatComponent chatId={parseInt(chatId)} />
+        </div>
       </div>
     </div>
   );

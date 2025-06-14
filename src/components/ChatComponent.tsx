@@ -185,7 +185,7 @@ const ChatComponent = ({ chatId }: Props) => {
   }, [messages]);
 
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-full">
       {/* Header */}
       <div className="sticky top-0 inset-x-2 p-4 bg-white flex justify-between items-center">
         <h3 className="text-xl font-bold font-telegraf">Chat</h3>

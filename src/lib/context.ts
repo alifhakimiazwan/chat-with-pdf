@@ -54,6 +54,74 @@ export async function getContext(query: string, fileKey: string) {
   return extractedContext;
 }
 
+// Function to identify question type (comparison, explanation, list, generic)
+function getQuestionType(question: string): string {
+  if (question.includes("compare") || question.includes("difference"))
+    return "comparison";
+  if (question.startsWith("why") || question.startsWith("how"))
+    return "explanation";
+  if (question.includes("list") || question.includes("what are")) return "list";
+  return "generic";
+}
+
+export async function getDynamicContext(userQuestion: string, fileKey: string) {
+  // Step 1: Get the initial context
+  let context = await getContext(userQuestion, fileKey);
+
+  // Step 2: If no context, try a question-type-based fallback
+  if (!context) {
+    console.log(
+      "No direct context found. Trying question-type-based fallback..."
+    );
+
+    const questionType = getQuestionType(userQuestion);
+    const fallbackQueries = {
+      comparison: ["differences", "similarities", "comparison of"],
+      explanation: ["reasons", "causes", "explanation of"],
+      list: ["key points", "main topics", "list of"],
+      generic: ["overview", "summary", "general information"],
+    };
+
+    const possibleQueries = fallbackQueries[questionType];
+
+    for (const query of possibleQueries) {
+      context = await getContext(query, fileKey);
+      if (context) break;
+    }
+  }
+
+  // Step 3: If still no context, try recent topics or commonly asked questions
+  if (!context) {
+    console.log(
+      "Still no context. Trying recent topics or related concepts..."
+    );
+    const relatedQueries = [
+      "introduction",
+      "summary",
+      "main points",
+      "key concepts",
+    ];
+    for (const related of relatedQueries) {
+      context = await getContext(related, fileKey);
+      if (context) break;
+    }
+  }
+
+  // Step 4: Combine contexts if multiple fragments are found
+  if (Array.isArray(context) && context.length > 1) {
+    console.log("Combining multiple context fragments...");
+    context = context.join("\n\n");
+  }
+
+  // Final check before returning
+  if (!context) {
+    console.log("No relevant context found after multiple attempts.");
+    return "";
+  }
+
+  return context;
+}
+
 export async function getContextFlashcard(fileKey: string): Promise<string> {
   try {
     // Simulate downloading the file from S3

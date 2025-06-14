@@ -9,11 +9,11 @@ export default function FlashcardPage({
     <div
       className="min-h-screen w-full flex flex-col items-center justify-start py-8 px-4"
       style={{
-        backgroundColor: "#ffffff", // white base
+        backgroundColor: "#ffffff",
         backgroundImage: `
-          linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-        `,
+      linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
+    `,
         backgroundSize: "40px 40px",
       }}
     >
@@ -21,7 +21,9 @@ export default function FlashcardPage({
         Flashcards
       </h1>
 
-      <MCQViewer chatId={parseInt(params.chatId)} />
+      <div className="w-full max-w-6xl">
+        <MCQViewer chatId={parseInt(params.chatId)} />
+      </div>
     </div>
   );
 }
