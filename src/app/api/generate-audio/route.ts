@@ -2,14 +2,25 @@
 import textToSpeech from "@google-cloud/text-to-speech";
 import fs from "fs";
 import util from "util";
-import path from "path";
 import { NextResponse } from "next/server";
 import { S3 } from "@aws-sdk/client-s3";
+// Setup Google TTS credentials from BASE64
 
-// Set the path to your Google Cloud service account file
-process.env.GOOGLE_APPLICATION_CREDENTIALS = path.resolve(
-  "./chat-with-pdf-457515-0b2e03696b9b.json"
-);
+const setupGoogleCredentials = () => {
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64) {
+    throw new Error("Missing GOOGLE_APPLICATION_CREDENTIALS_BASE64 env");
+  }
+
+  const filePath = "/tmp/google-credentials.json";
+  const buffer = Buffer.from(
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64,
+    "base64"
+  );
+  fs.writeFileSync(filePath, buffer);
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = filePath;
+};
+
+setupGoogleCredentials();
 
 // AWS S3 Configuration
 const s3 = new S3({
