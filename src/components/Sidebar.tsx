@@ -79,6 +79,18 @@ const Sidebar = ({ isMobile }: Props) => {
               </p>
             </div>
           </Link>
+          <a
+            href="https://forms.gle/UtbGgBWAEbYqNppFA"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleLinkClick}
+          >
+            <div className="flex items-center gap-2 p-3 bg-purple-700 hover:bg-purple-500 rounded-md cursor-pointer  transition">
+              <p className="text-md font-telegraf font-medium text-gray-100  dark:text-purple-100">
+                Take Survey
+              </p>
+            </div>
+          </a>
         </div>
       </div>
 

@@ -7,13 +7,10 @@ import { uploadPodcastToS3 } from "@/lib/db/s3";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import OpenAI from "openai";
 import textToSpeech from "@google-cloud/text-to-speech";
-import path from "path";
-
+import fs from "fs";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-import fs from "fs";
 
 function setupGoogleCredentials() {
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_BASE64) {
