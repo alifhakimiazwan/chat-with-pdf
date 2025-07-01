@@ -31,6 +31,7 @@ export default function MCQViewer({ chatId }: { chatId: number }) {
         <p className="text-center text-gray-500">Loading...</p>
       ) : (
         <MCQ
+          chatId={chatId}
           questions={mcqs.map((mcq) => ({
             question: mcq.question,
             options: JSON.parse(mcq.options),

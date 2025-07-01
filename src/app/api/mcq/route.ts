@@ -14,20 +14,26 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const mcqPrompt = `
-You're an educational assistant. Based on the given text, generate 10 multiple choice questions.
+You are an educational assistant tasked with creating effective multiple choice questions (MCQs) that follow the principles of self-contained learning and long-term memory retention.
 
-Each question should have:
-- a question,
-- 4 answer options,
-- the correct answer (must be the actual answer text, not "A", "B", etc.)
+Based on the provided content, generate 10 MCQs that meet the following criteria:
 
-Respond in this JSON format:
+1. Each question must be **self-contained** — understandable on its own, without requiring the user to reference the original document.
+2. Each question must focus on **important factual content**, such as definitions, causes, functions, outcomes, or characteristics.
+3. Avoid vague, structural, or metadata questions (e.g. "Which section discusses X?", "Who is the author?", "On what page is this mentioned?")
+4. Use **clear and specific wording** — avoid pronouns like “it,” “they,” or “this” without context.
+5. Each question must include:
+   - A single, clear question
+   - Four distinct answer options
+   - One clearly correct answer (must match exactly one of the options)
+
+Respond only in this JSON format:
 {
   "mcqs": [
     {
       "question": "What is ...?",
-      "options": ["A", "B", "C", "D"],
-      "correctAnswer": "B" // <- THIS should be the actual string from options
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": "Option B"
     }
   ]
 }
@@ -56,11 +62,12 @@ export async function POST(req: Request) {
     const loader = new PDFLoader(filePath);
     const pages = (await loader.load()) as PDFPage[];
     const combinedText = pages.map((p) => p.pageContent).join("\n\n");
-    const trimmedText = combinedText.slice(0, 4000); 
+    const trimmedText = combinedText.slice(0, 4000);
     console.log("🧠 Sending prompt of length:", trimmedText.length);
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
+      temperature: 0.3, // focused & consistent
       messages: [
         { role: "system", content: mcqPrompt },
         { role: "user", content: trimmedText }, // limit for safety

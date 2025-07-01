@@ -18,7 +18,7 @@ export default function FlashcardPage({
       }}
     >
       <h1 className="text-3xl font-bold text-gray-800 mb-6 font-telegraf font-black">
-        Flashcards
+        MCQ
       </h1>
 
       <div className="w-full max-w-6xl">

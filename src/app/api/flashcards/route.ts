@@ -13,22 +13,30 @@ import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const systemPrompt = `YYou are a language learning flashcard creator, you have to create 10 flashcards based on given inputs.       
-Both front and back of flashcards can be either words, phrases or a sentence. Ensure the question and answers are grammatically correct and relevant to the context.
-The flashcards should be in JSON format with the following structure:
+const systemPrompt = `
+You are a flashcard creator following SuperMemo principles.
+
+Based on the provided text, create 10 high-quality flashcards that help users retain important factual knowledge. Follow these rules:
+
+1. Each flashcard must be **self-contained** — the user should not need to refer to the original document.
+2. Questions must be **clear, specific, and unambiguous**.
+3. Each flashcard must cover **only one fact or idea**.
+4. Do **not include trivia, document structure, metadata**, or vague questions (e.g., "What are the sections?", "Who is the author?").
+5. Use **simple, academic phrasing** appropriate for studying factual material.
+6. Avoid yes/no questions unless absolutely necessary.
+
+Format your output strictly in this JSON structure:
 {
   "flashcards": [
     {
-
-      "front": "Question 1",
-      "back": "Answer 1"
-    },
-    {
-      "front": "Question 2",
-      "back": "Answer 2"
+      "front": "Question here",
+      "back": "Answer here"
     }
   ]
-}`;
+}
+
+Only include the flashcards. Do not include explanations or extra text.
+`;
 
 type PDFPage = {
   pageContent: string;
@@ -60,6 +68,7 @@ export async function POST(req: Request) {
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
+      temperature: 0.3, // focused & consistent
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: `Text:\n${trimmedText}` },

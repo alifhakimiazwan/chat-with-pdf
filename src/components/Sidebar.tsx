@@ -11,7 +11,6 @@ import {
 import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,7 +20,6 @@ type Props = {
 };
 
 const Sidebar = ({ isMobile }: Props) => {
-  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLinkClick = () => {
@@ -79,18 +77,6 @@ const Sidebar = ({ isMobile }: Props) => {
               </p>
             </div>
           </Link>
-          <a
-            href="https://forms.gle/UtbGgBWAEbYqNppFA"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={handleLinkClick}
-          >
-            <div className="flex items-center gap-2 p-3 bg-purple-700 hover:bg-purple-500 rounded-md cursor-pointer  transition">
-              <p className="text-md font-telegraf font-medium text-gray-100  dark:text-purple-100">
-                Take Survey
-              </p>
-            </div>
-          </a>
         </div>
       </div>
 

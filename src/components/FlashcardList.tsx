@@ -126,6 +126,13 @@ export default function FlashcardList({ chatId }: { chatId: number }) {
               >
                 Restart Deck
               </button>
+              <Button
+                variant="outline"
+                onClick={() => router.push(`/dashboard/chat/${chatId}`)}
+                className="mt-3 text-purple-600 border-purple-600 hover:bg-purple-50 font-telegraf"
+              >
+                ← Back to Chat
+              </Button>
             </div>
           ) : (
             <motion.div
