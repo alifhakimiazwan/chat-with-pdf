@@ -82,16 +82,16 @@ const MCQSidebar = ({ chats = [], onDeleteChat }: Props) => {
         params: { chatId },
       });
 
-      const flashcards = res.data;
+      const mcq = res.data; // Array of { question, options (as string), correctAnswer }
+
       const doc = new jsPDF();
 
       // Load logo from public folder
       const logoBase64 = await loadImageAsBase64("/ERY.png");
 
-      // Add Logo
+      // === PAGE 0: Cover ===
       doc.addImage(logoBase64, "PNG", 80, 20, 50, 50); // center top
 
-      // Title & meta
       doc.setFontSize(20);
       doc.text("Multiple Choice Questions", 105, 80, { align: "center" });
 
@@ -106,29 +106,60 @@ const MCQSidebar = ({ chats = [], onDeleteChat }: Props) => {
 
       doc.addPage();
 
-      // Table content
-      const rows = flashcards.map((card: any, idx: number) => [
-        `Q${idx + 1}: ${card.front}`,
-        `A${idx + 1}: ${card.back}`,
-      ]);
+      // === PAGE 1: Questions + Options ===
+      doc.setFontSize(12);
+      let startY = 20;
 
-      autoTable(doc, {
-        head: [["Question", "Answer"]],
-        body: rows,
-        styles: { fontSize: 10 },
-        columnStyles: {
-          0: { cellWidth: 90 },
-          1: { cellWidth: 90 },
-        },
-        headStyles: {
-          fillColor: [138, 43, 226],
-          textColor: [255, 255, 255],
-          halign: "center",
-        },
-        margin: { top: 10, left: 10, right: 10 },
+      mcq.forEach((item: any, index: number) => {
+        const question = `${index + 1}. ${item.question}`;
+
+        let options: string[] = [];
+        try {
+          options = JSON.parse(item.options);
+        } catch (err) {
+          console.warn(`Error parsing options for question ${index + 1}`, err);
+        }
+
+        // Add question
+        doc.text(question, 10, startY);
+        startY += 7;
+
+        // Add options
+        options.forEach((opt: string, i: number) => {
+          const label = String.fromCharCode(65 + i); // A, B, C, D...
+          doc.text(`${label}. ${opt}`, 15, startY);
+          startY += 6;
+        });
+
+        startY += 5;
+
+        // Add new page if content overflows
+        if (startY > 270) {
+          doc.addPage();
+          startY = 20;
+        }
       });
 
-      doc.save(`flashcards-${chatId}.pdf`);
+      // === PAGE 2: Answer Key ===
+      doc.addPage();
+      doc.setFontSize(14);
+      doc.text("Answer Key", 105, 20, { align: "center" });
+
+      doc.setFontSize(12);
+      let answerY = 30;
+
+      mcq.forEach((item: any, index: number) => {
+        doc.text(`${index + 1}. ${item.correctAnswer}`, 10, answerY);
+        answerY += 7;
+
+        if (answerY > 280) {
+          doc.addPage();
+          answerY = 20;
+        }
+      });
+
+      // Save PDF
+      doc.save(`mcq-${chatId}.pdf`);
     } catch (err) {
       console.error("PDF generation failed:", err);
     }
